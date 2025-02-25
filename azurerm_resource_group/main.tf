@@ -1,6 +1,6 @@
-provider "azurerm" {
-  features {}
-}
+# provider "azurerm" {
+#   features {}
+# }
 
 resource "azurerm_resource_group" "rg" {
   name     = "my-first-terraform-rg"
@@ -66,3 +66,27 @@ resource "azurerm_linux_virtual_machine" "myvm1" {
     storage_account_type = "Standard_LRS"
   }
 }
+
+########azure-storage-creation
+
+resource "azurerm_storage_account" "tfstate" {
+  name                     = "tfstate-sasender"
+  resource_group_name      = azurerm_resource_group.rg.name
+  location                 = azurerm_resource_group.rg.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  # public_network_access    = "Disabled"
+  # enable_https_traffic_only = true
+}
+
+resource "azurerm_storage_container" "tfstate" {
+  name                  = "tfstate"
+  storage_account_id   = azurerm_storage_account.tfstate.id
+  container_access_type = "private"
+}
+
+# resource "random_string" "suffix" {
+#   length  = 6
+#   special = false
+#   upper   = false
+# }

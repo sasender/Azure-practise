@@ -15,15 +15,6 @@ on:
         description: 'Tag ID'     
         required: true
 
-  # to trigger workflow on code push
-  # push:
-  #   branches:
-  #     - main
-
-  # # to trigger workflow on PRs
-  # pull_request:
-  #   branches:
-  #     - main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -41,58 +32,13 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        id: init
+      - name: infra-deploy
         run: |
-          terraform init
-
-      - name: Terraform Format
-        id: fmt
-        run: terraform fmt -check -recursive
-        continue-on-error: true
-
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -out tfplan
-        continue-on-error: false
-
-      # Save plan to artifacts
-      - name: Publish Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: tfplan
-
-      # Create string output of Terraform Plan
-      - name: Create String Output
-        id: tf-plan-string
-        run: |
-          TERRAFORM_PLAN=$(terraform show -no-color tfplan)
-          delimiter="$(openssl rand -hex 8)"
-          echo "summary<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "## Terraform Plan Output" >> $GITHUB_OUTPUT
-          echo "<details><summary>Click to expand</summary>" >> $GITHUB_OUTPUT
-          echo "" >> $GITHUB_OUTPUT
-          echo '```terraform' >> $GITHUB_OUTPUT
-          echo "$TERRAFORM_PLAN" >> $GITHUB_OUTPUT
-          echo '```' >> $GITHUB_OUTPUT
-          echo "</details>" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
-
-      # Publish Terraform Plan as task summary
-      - name: Publish Terraform Plan to Task Summary
-        env:
-          SUMMARY: ${{ steps.tf-plan-string.outputs.summary }}
-        run: |
-          echo "$SUMMARY" >> $GITHUB_STEP_SUMMARY
-
-      - name: Terraform Validate
-        id: validate
-        run: terraform validate -no-color
-
-      # Terraform Apply
-      # - name: Terraform Apply
-      #   run: terraform apply -auto-approve
-
-      - name: Terraform destroy
-        run: terraform destroy -auto-approve
+          sudo apt-get -y update; sudo apt-get -y install git curl jq python3-pip; sudo apt-get -y install wget unzip
+          sudo pip3 install -U awscli
+          sudo curl -fsSL https://get.docker.com -o get-docker.sh         
+          ls -la           
+          rm -rf .terraform
+          terraform init 
+          terraform validate -no-color
+          terraform plan 
