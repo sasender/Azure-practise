@@ -42,3 +42,4 @@ jobs:
           terraform init 
           terraform validate -no-color
           terraform plan 
+          terraform destroy --auto-approve 
