@@ -10,16 +10,20 @@ env:
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      tagid:
+        description: 'Tag ID'     
+        required: true
 
   # to trigger workflow on code push
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
-  # to trigger workflow on PRs
-  pull_request:
-    branches:
-      - main
+  # # to trigger workflow on PRs
+  # pull_request:
+  #   branches:
+  #     - main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -28,7 +32,7 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     defaults:
-      run:
+      run: 
         working-directory: ./azurerm_resource_group
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
